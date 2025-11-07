@@ -67,8 +67,6 @@ graph* input_graph() {
         for (int j = i; j < N; j++) {
             printf("Is there an edge %d<->%d? (1/0): ", i, j);
             scanf("%d", &row_pointers[i][j]);
-            // Copy value to position [j][i]
-            row_pointers[j][i] = row_pointers[i][j];
         }
         printf("\n");
     }
@@ -129,7 +127,6 @@ void performBFS(graph* G) {
     visited_array[start_node] = 1;
     printf("Visited: %d\n", start_node);
 
-    // while queue is not empty
     while (q.front <= q.rear) {
         int explore_node = dequeue(&q);
 

@@ -9,27 +9,23 @@ typedef struct Graph {
 graph* input_graph();
 void display_graph(graph*);
 void free_graph(graph*);
-void performBFS(graph*);
+void performDFS(graph*);
 
-typedef struct Queue {
+typedef struct Stack {
     int* arr;
-    int front, rear, MAX;
-} queue;
+    int top, MAX;
+} stack;
 
-void enqueue(queue* q, int node) {
-    if (q->front == -1 && q->rear == -1) {
-        q->front = 0, q->rear = 0;
-    } else {
-        (q->rear)++;
-    }
-    q->arr[q->rear] = node;
+void push(stack* st, int node) {
+    (st->top)++;
+    st->arr[st->top] = node;
 }
-int dequeue(queue* q) {
-    int node = q->arr[q->front];
-    (q->front)++;
+int pop(stack* st) {
+    int node = st->arr[st->top];
+    (st->top)--;
     return node;
 }
-void free_queue(queue* q) { free(q->arr); }
+void free_stack(stack* st) { free(st->arr); }
 
 int main() {
     graph* G = input_graph();
@@ -37,7 +33,7 @@ int main() {
 
     display_graph(G);
     printf("\n");
-    performBFS(G);
+    performDFS(G);
     free_graph(G);
     printf("\n");
     return 0;
@@ -104,14 +100,14 @@ void free_graph(graph* G) {
     free(G);
 }
 
-// ----- BFS ----- //
-void performBFS(graph* G) {
-    printf("----- BFS -----\n\n");
+// ----- DFS ----- //
+void performDFS(graph* G) {
+    printf("----- DFS -----\n\n");
 
     int* visited_array = (int*)calloc(G->num_verts, sizeof(int));
-    int* queue_arr = (int*)malloc(sizeof(int) * G->num_verts);
+    int* stack_arr = (int*)malloc(sizeof(int) * G->num_verts);
 
-    queue q = {.arr = queue_arr, .front = -1, .rear = -1, .MAX = G->num_verts};
+    stack st = {.arr = stack_arr, .top = -1, .MAX = G->num_verts};
 
     int start_node;
     printf("Enter starting node: ");
@@ -119,26 +115,24 @@ void performBFS(graph* G) {
     if (start_node < 0 || start_node > G->num_verts - 1) {
         printf("Invalid starting node.");
         free(visited_array);
-        free_queue(&q);
+        free_stack(&st);
         free_graph(G);
         exit(-1);
     }
 
     // Explicitly visit starting node
-    enqueue(&q, start_node);
     visited_array[start_node] = 1;
-    printf("Visited: %d\n", start_node);
+    push(&st, start_node);
 
-    // while queue is not empty
-    while (q.front <= q.rear) {
-        int explore_node = dequeue(&q);
-
+    while (st.top != -1) {
+        int explore_node = pop(&st);
+        printf("Visited: %d\n", explore_node);
+        
         for (int i = 0; i < G->num_verts; i++) {
-            // If neighbour is not visited, enqueue node
+            // If neighbour is not visited, push node
             if (G->adj_mat[explore_node][i] == 1 && visited_array[i] == 0) {
-                enqueue(&q, i);
                 visited_array[i] = 1;
-                printf("Visited: %d\n", i);
+                push(&st, i);
             }
         }
     }
