@@ -60,11 +60,9 @@ graph* input_graph() {
     }
 
     for (int i = 0; i < N; i++) {
-        for (int j = i; j < N; j++) {
-            printf("Is there an edge %d<->%d? (1/0): ", i, j);
+        for (int j = 0; j < N; j++) {
+            printf("Is there an edge %d->%d? (1/0): ", i, j);
             scanf("%d", &row_pointers[i][j]);
-            // Copy value to position [j][i]
-            row_pointers[j][i] = row_pointers[i][j];
         }
         printf("\n");
     }
@@ -136,7 +134,4 @@ void performDFS(graph* G) {
             }
         }
     }
-
-    free(visited_array);
-    free(stack_arr);
 }
