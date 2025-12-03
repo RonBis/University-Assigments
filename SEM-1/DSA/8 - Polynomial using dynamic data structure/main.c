@@ -1,7 +1,6 @@
 #include <stdio.h>
 #include <stdlib.h>
 
-// Structure for each polynomial term (node)
 struct node {
     float coef;
     int expo;
@@ -58,7 +57,6 @@ struct node* createPoly(struct node* head) {
     return head;
 }
 
-// Display polynomial nicely
 void printPoly(struct node* head) {
     if (head == NULL) {
         printf("0\n");

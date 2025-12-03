@@ -1,11 +1,14 @@
 #include <stdio.h>
+#include <stdlib.h>
 
 struct poly {
     int coeff;
     int expo;
-} p1[20], p2[20], p3[40];
+};
 
+struct poly *p1, *p2, *p3;
 int t1, t2, t3;
+int max1, max2, max3;
 
 int read(struct poly[]);
 void display(struct poly[], int);
@@ -16,6 +19,23 @@ int differentiate(struct poly[], int);
 
 int main() {
     int f = 1, g = 0, ch;
+
+    printf("Enter maximum number of terms for Polynomial-1: ");
+    scanf("%d", &max1);
+    printf("Enter maximum number of terms for Polynomial-2: ");
+    scanf("%d", &max2);
+
+    max3 = max1 + max2;   // maximum possible for multiplication
+
+    /* ---- Allocate memory for polynomials ---- */
+    p1 = (struct poly*) malloc(max1 * sizeof(struct poly));
+    p2 = (struct poly*) malloc(max2 * sizeof(struct poly));
+    p3 = (struct poly*) malloc(max3 * sizeof(struct poly));
+
+    if (!p1 || !p2 || !p3) {
+        printf("Memory allocation failed!\n");
+        return 1;
+    }
 
     while (f == 1) {
         if (g == 0) {
@@ -80,11 +100,14 @@ int main() {
         }
     }
 
+    free(p1);
+    free(p2);
+    free(p3);
+
     return 0;
 }
 
 /* --------------------------- READ --------------------------- */
-
 int read(struct poly p[]) {
     int t, i;
     printf("Enter number of terms: ");
@@ -100,7 +123,6 @@ int read(struct poly p[]) {
 }
 
 /* ------------------------- DISPLAY -------------------------- */
-
 void display(struct poly p[], int t) {
     for (int i = 0; i < t; i++) {
         if (p[i].coeff == 0) continue;
@@ -114,7 +136,6 @@ void display(struct poly p[], int t) {
 }
 
 /* -------------------------- ADD / SUB ------------------------ */
-
 int add(int sign) {   // sign=1 → add,  sign=0 → subtract
     int i = 0, j = 0, k = 0;
 
@@ -149,11 +170,9 @@ int add(int sign) {   // sign=1 → add,  sign=0 → subtract
 }
 
 /* ------------------------ MULTIPLICATION ----------------------- */
-
 int multiply() {
     int k = 0;
 
-    // Multiply every term
     for (int i = 0; i < t1; i++) {
         for (int j = 0; j < t2; j++) {
             p3[k].coeff = p1[i].coeff * p2[j].coeff;
@@ -168,7 +187,6 @@ int multiply() {
             if (p3[i].expo == p3[j].expo) {
                 p3[i].coeff += p3[j].coeff;
 
-                // Shift left
                 for (int p = j; p < k - 1; p++)
                     p3[p] = p3[p + 1];
 
@@ -182,7 +200,6 @@ int multiply() {
 }
 
 /* ---------------------- DIFFERENTIATION ----------------------- */
-
 int differentiate(struct poly pol[], int l) {
     int k = 0;
 
