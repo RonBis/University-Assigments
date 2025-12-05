@@ -151,7 +151,7 @@ void performDFS(graph* G, int start_node, int* visited_array) {
 
     while (st.top != -1) {
         int explore_node = pop(&st);
-        printf("Visited: %d\n", explore_node);
+        printf("Visited: %d\n", explore_node+1);
 
         for (int i = 0; i < G->num_verts; i++) {
             // If neighbour is not visited, push node

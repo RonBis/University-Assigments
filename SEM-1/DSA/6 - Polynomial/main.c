@@ -107,7 +107,6 @@ int main() {
     return 0;
 }
 
-/* --------------------------- READ --------------------------- */
 int read(struct poly p[]) {
     int t, i;
     printf("Enter number of terms: ");
@@ -122,7 +121,6 @@ int read(struct poly p[]) {
     return t;
 }
 
-/* ------------------------- DISPLAY -------------------------- */
 void display(struct poly p[], int t) {
     for (int i = 0; i < t; i++) {
         if (p[i].coeff == 0) continue;
@@ -169,7 +167,6 @@ int add(int sign) {   // sign=1 → add,  sign=0 → subtract
     return k;
 }
 
-/* ------------------------ MULTIPLICATION ----------------------- */
 int multiply() {
     int k = 0;
 
@@ -199,7 +196,6 @@ int multiply() {
     return k;
 }
 
-/* ---------------------- DIFFERENTIATION ----------------------- */
 int differentiate(struct poly pol[], int l) {
     int k = 0;
 

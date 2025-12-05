@@ -131,6 +131,7 @@ void performDFS(graph* G) {
     int start_node;
     printf("Enter starting node: ");
     scanf("%d", &start_node);
+    start_node = start_node - 1;
     if (start_node < 0 || start_node > G->num_verts - 1) {
         printf("Invalid starting node.");
         free(state.visited);
@@ -141,6 +142,12 @@ void performDFS(graph* G) {
     }
 
     dfs_recursive_directed(start_node, &state, G);
+    // Check if all edges are visited
+    for (int u=0; u<G->num_verts; u++) {
+        if (state.visited[u] != 2) {
+            dfs_recursive_directed(u, &state, G);
+        }
+    }
 
     free(state.visited);
     free(state.discovery);
@@ -150,7 +157,7 @@ void performDFS(graph* G) {
 void dfs_recursive_directed(int u, DFSState* state, graph* G) {
     state->visited[u] = 1;  // Mark as being processed
     state->discovery[u] = ++(state->time);
-    printf("Visited: %d (time: %d)\n", u+1, state->discovery[u]);
+    printf("\nVisited: %d (time: %d)\n", u+1, state->discovery[u]);
 
     for (int v = 0; v < G->num_verts; v++) {
         if (G->adj_mat[u][v] == 1) {

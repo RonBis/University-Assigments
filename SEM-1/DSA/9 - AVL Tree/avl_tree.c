@@ -7,58 +7,64 @@
 
 typedef struct Node {
     int data;
+    int height;
     struct Node* left_child;
     struct Node* right_child;
 } node;
 
-typedef struct TreeLevel {
-    int current_level;
-    int node_count;
-    int MAXNODE;
-} tree_level;
+// typedef struct TreeLevel {
+//     int current_level;
+//     int node_count;
+//     int MAXNODE;
+// } tree_level;
 
 node* create_node(int data);
-node* insert(node* root, int data, tree_level* tree_lvl);
+node* insert(node* root, int data);
 void delete(node* root, int data);
-void display(node* root);
+void display(node* root, int space);
 
-void update_tree_level(tree_level* tree_lvl) {
-    if (tree_lvl->node_count == tree_lvl->MAXNODE) {
-        tree_lvl->current_level++;
-        tree_lvl->node_count = 0;
-        tree_lvl->MAXNODE = pow(2, tree_lvl->current_level);
-    }
-}
+// void update_tree_level(tree_level* tree_lvl) {
+//     if (tree_lvl->node_count == tree_lvl->MAXNODE) {
+//         tree_lvl->current_level++;
+//         tree_lvl->node_count = 0;
+//         tree_lvl->MAXNODE = pow(2, tree_lvl->current_level);
+//     }
+// }
 
-int get_terminal_width() {
-    struct winsize w;
-    ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
-    return w.ws_col;
-}
+// int get_terminal_width() {
+//     struct winsize w;
+//     ioctl(STDOUT_FILENO, TIOCGWINSZ, &w);
+//     return w.ws_col;
+// }
 
-void center_text(const char* text) {
-    int term_width = get_terminal_width();
-    int text_length = strlen(text);
-    int padding = (term_width - text_length) / 2;
+// void center_text(const char* text) {
+//     int term_width = get_terminal_width();
+//     int text_length = strlen(text);
+//     int padding = (term_width - text_length) / 2;
 
-    if (padding < 0) padding = 0;
+//     if (padding < 0) padding = 0;
 
-    printf("%*s%s\n", padding, "", text);
+//     printf("%*s%s\n", padding, "", text);
+// }
+
+int max(int a, int b) { return (a > b) ? a : b; }
+
+static inline int height(node* node) {
+    return node == NULL ? -1 : node->height;
 }
 
 int main() {
     int sequence[6] = {10, 20, 30, 40, 50, 25};
-    tree_level tree_lvl = {.current_level = 0, .node_count = 0, .MAXNODE = 1};
 
     node* root = NULL;
     for (int i = 0; i < 6; i++) {
         if (root == NULL)
-            root = insert(root, sequence[i], &tree_lvl);
+            root = insert(root, sequence[i]);
         else
-            insert(root, sequence[i], &tree_lvl);
+            insert(root, sequence[i]);
     }
 
-    // display_tree_enhanced(root);
+    display(root, 0);
     printf("\n");
     return 0;
 }
@@ -66,49 +72,44 @@ int main() {
 node* create_node(int data) {
     node* root = (node*)malloc(sizeof(node));
     root->data = data;
+    root->height = 0;
     root->left_child = NULL;
     root->right_child = NULL;
     return root;
 }
 
-node* insert(node* root, int data, tree_level* tree_lvl) {
-    tree_lvl->node_count++;
-    printf("Tree level: {current_level: %d, node_count: %d, MAXNODE: %d}\n",
-           tree_lvl->current_level, tree_lvl->node_count, tree_lvl->MAXNODE);
-
+node* insert(node* root, int data) {
     if (root == NULL) {
-        // Create root node
-        root = create_node(data);
-        update_tree_level(tree_lvl);
-        return root;
+        return create_node(data);
     }
 
-    node* tr = root; // To keep track of current node
-    int level_tr = 0; // To keep track of current level
-    printf("Current level: %d\n", level_tr);
-    while (1) {
-        level_tr++;
-        printf("Current level: %d\n", level_tr);
-        if (data <= tr->data) {
-            if (tr->left_child == NULL) {
-                tr->left_child = create_node(data);
-                break;
-            }
-            // Explore left subtree
-            tr = tr->left_child;
-        } else {
-            if (tr->right_child == NULL) {
-                tr->right_child = create_node(data);
-                break;
-            }
-            // Explore right subtree
-            tr = tr->right_child;
-        }
+    if (data <= root->data) {
+        root->left_child = insert(root->left_child, data);
+    } else {
+        root->right_child = insert(root->right_child, data);
     }
-    update_tree_level(tree_lvl);
-    return NULL;
+
+    // Update height (here root is last inserted node's parent)
+    root->height = 1 + max(height(root->left_child), height(root->right_child));
+    // Check balance factor (bf)
+    int bf = height(root->left_child) - height(root->right_child);
+    printf("root: %d, balance factor: %d\n", root->data, bf);
+    return root;
 }
 
 void delete(node* root, int data) {}
 
-void display(node* root) {}
+// Horizontal tree display function
+void display(node* root, int space) {
+    if (root == NULL) return;
+
+    space += 8;  // indentation between levels
+
+    display(root->right_child, space);  // print right subtree first
+
+    printf("\n");
+    for (int i = 8; i < space; i++) printf(" ");
+    printf("%d\n", root->data);
+
+    display(root->left_child, space);
+}
