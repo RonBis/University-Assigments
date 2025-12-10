@@ -1,3 +1,5 @@
+/* Program to compute number of components in an undirected graph */
+
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -28,31 +30,31 @@ int pop(stack* st) {
 void free_stack(stack* st) { free(st->arr); }
 
 int main() {
-    // graph* G = input_graph();
-    graph* G = (graph*)malloc(sizeof(graph));
-    G->num_verts = 12;
-    int adj_mat[12][12] = {
-        {0,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,},  
-        {1,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,},  
-        {1,  1,  0,  0,  1,  1,  0,  0,  0,  0,  0,  0,},  
-        {1,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,},  
-        {0,  0,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,},  
-        {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,},  
-        {0,  0,  1,  0,  0,  0,  0,  1,  1,  0,  0,  0,},  
-        {0,  0,  0,  0,  0,  0,  1,  0,  1,  0,  0,  0,},  
-        {0,  0,  0,  0,  0,  0,  1,  1,  0,  0,  0,  0,},  
-        {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,}, 
-        {0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,},  
-        {0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,}, 
-    };
-    int **dynamic_arr = malloc(12 * sizeof(int*));
-    for (int i = 0; i < 12; i++) {
-        dynamic_arr[i] = malloc(12 * sizeof(int));
-        for (int j = 0; j < 12; j++) {
-            dynamic_arr[i][j] = adj_mat[i][j]; // copy values
-        }
-    }
-    G->adj_mat = dynamic_arr;
+    graph* G = input_graph();
+    // graph* G = (graph*)malloc(sizeof(graph));
+    // G->num_verts = 12;
+    // int adj_mat[12][12] = {
+    //     {0,  1,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,},  
+    //     {1,  0,  1,  0,  0,  0,  0,  0,  0,  0,  0,  0,},  
+    //     {1,  1,  0,  0,  1,  1,  0,  0,  0,  0,  0,  0,},  
+    //     {1,  0,  0,  0,  1,  0,  0,  0,  0,  0,  0,  0,},  
+    //     {0,  0,  1,  1,  0,  0,  0,  0,  0,  0,  0,  0,},  
+    //     {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  0,},  
+    //     {0,  0,  1,  0,  0,  0,  0,  1,  1,  0,  0,  0,},  
+    //     {0,  0,  0,  0,  0,  0,  1,  0,  1,  0,  0,  0,},  
+    //     {0,  0,  0,  0,  0,  0,  1,  1,  0,  0,  0,  0,},  
+    //     {0,  0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  1,}, 
+    //     {0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,},  
+    //     {0,  0,  0,  0,  0,  0,  0,  0,  0,  1,  0,  0,}, 
+    // };
+    // int **dynamic_arr = malloc(12 * sizeof(int*));
+    // for (int i = 0; i < 12; i++) {
+    //     dynamic_arr[i] = malloc(12 * sizeof(int));
+    //     for (int j = 0; j < 12; j++) {
+    //         dynamic_arr[i][j] = adj_mat[i][j]; // copy values
+    //     }
+    // }
+    // G->adj_mat = dynamic_arr;
 
     if (!G) return -1;
 

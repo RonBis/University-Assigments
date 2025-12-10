@@ -49,11 +49,11 @@ graph_inc* input_graph_incidence() {
         }
     }
 
-    printf("Enter edges (from to weight):\n");
+    printf("Enter edges (from to):\n");
     for (int edge_idx = 0; edge_idx < E; edge_idx++) {
-        int from, to, weight;
+        int from, to;
         printf("Edge %d: ", edge_idx);
-        scanf("%d %d %d", &from, &to, &weight);
+        scanf("%d %d %d", &from, &to);
 
         if (from < 0 || from >= N || to < 0 || to >= N) {
             printf("Invalid vertex! Please enter vertices between 0 and %d\n",

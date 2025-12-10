@@ -44,9 +44,11 @@ int main() {
 }
 
 graph* input_graph() {
-    int N;
+    int N, E;
     printf("Enter number of nodes: ");
     scanf("%d", &N);
+    printf("Enter number of edges: ");
+    scanf("%d", &E);
 
     // Allocate memory for N-node adjacency matrix
     int* data_block = (int*)malloc(N * N * sizeof(int));
@@ -63,14 +65,30 @@ graph* input_graph() {
         row_pointers[i] = &data_block[i * N];
     }
 
+    // Initialize adjacency matrix to 0
     for (int i = 0; i < N; i++) {
-        for (int j = i; j < N; j++) {
-            printf("Is there an edge %d<->%d? (1/0): ", i, j);
-            scanf("%d", &row_pointers[i][j]);
-            // Copy value to position [j][i]
-            row_pointers[j][i] = row_pointers[i][j];
+        for (int j = 0; j < N; j++) {
+            row_pointers[i][j] = 0;
         }
-        printf("\n");
+    }
+
+    printf("Enter edges (from to):\n");
+    for (int edge_idx = 0; edge_idx < E; edge_idx++) {
+        int from, to;
+        printf("Edge %d: ", edge_idx);
+        scanf("%d %d", &from, &to);
+
+        if (from < 0 || from >= N || to < 0 || to >= N) {
+            printf("Invalid vertex! Please enter vertices between 0 and %d\n",
+                   N - 1);
+            edge_idx--;
+            continue;
+        }
+
+        // For undirected unweighted graph:
+        // 1 for incoming/outgoing edge (from/to vertex)
+        row_pointers[from][to] = 1;
+        row_pointers[to][from] = 1;
     }
 
     graph* G = (graph*)malloc(sizeof(graph));
