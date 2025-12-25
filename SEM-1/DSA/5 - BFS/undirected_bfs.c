@@ -122,6 +122,27 @@ void free_graph(graph* G) {
     free(G);
 }
 
+void bfs(graph* G, int start_node, int* visited_array, queue* q) {
+    // Explicitly visit starting node
+    enqueue(q, start_node);
+    visited_array[start_node] = 1;
+    printf("Visited: %d\n", start_node);
+
+    // while queue is not empty
+    while (q->front <= q->rear) {
+        int explore_node = dequeue(q);
+
+        for (int i = 0; i < G->num_verts; i++) {
+            // If neighbour is not visited, enqueue node
+            if (G->adj_mat[explore_node][i] == 1 && visited_array[i] == 0) {
+                enqueue(q, i);
+                visited_array[i] = 1;
+                printf("Visited: %d\n", i);
+            }
+        }
+    }
+}
+
 // ----- BFS ----- //
 void performBFS(graph* G) {
     printf("----- BFS -----\n\n");
@@ -142,22 +163,11 @@ void performBFS(graph* G) {
         exit(-1);
     }
 
-    // Explicitly visit starting node
-    enqueue(&q, start_node);
-    visited_array[start_node] = 1;
-    printf("Visited: %d\n", start_node);
+    bfs(G, start_node, visited_array, &q);
 
-    // while queue is not empty
-    while (q.front <= q.rear) {
-        int explore_node = dequeue(&q);
-
-        for (int i = 0; i < G->num_verts; i++) {
-            // If neighbour is not visited, enqueue node
-            if (G->adj_mat[explore_node][i] == 1 && visited_array[i] == 0) {
-                enqueue(&q, i);
-                visited_array[i] = 1;
-                printf("Visited: %d\n", i);
-            }
+    for (int i = 0; i < G->num_verts; i++) {
+        if (visited_array[i] != 1) {
+            bfs(G, i, visited_array, &q);
         }
     }
 }

@@ -10,7 +10,7 @@ struct poly *p1, *p2, *p3;
 int t1, t2, t3;
 int max1, max2, max3;
 
-int read(struct poly[]);
+int read(struct poly[], int);
 void display(struct poly[], int);
 
 int add(int);
@@ -40,12 +40,12 @@ int main() {
     while (f == 1) {
         if (g == 0) {
             printf("\nEntering Polynomial-1 (Enter terms in descending exponent order)\n");
-            t1 = read(p1);
+            t1 = read(p1, max1);
             printf("\nPolynomial-1: ");
             display(p1, t1);
 
             printf("\nEntering Polynomial-2 (Enter terms in descending exponent order)\n");
-            t2 = read(p2);
+            t2 = read(p2, max2);
             printf("\nPolynomial-2: ");
             display(p2, t2);
         }
@@ -107,10 +107,17 @@ int main() {
     return 0;
 }
 
-int read(struct poly p[]) {
+int read(struct poly p[], int max) {
     int t, i;
-    printf("Enter number of terms: ");
-    scanf("%d", &t);
+
+    do {
+        printf("Enter number of terms: ");
+        scanf("%d", &t);
+
+        if (t <= 0 || t > max) {
+            printf("Invalid number of terms. Please enter between 1 and %d.\n", max);
+        }
+    } while (t <= 0 || t > max);
 
     for (i = 0; i < t; i++) {
         printf("Coefficient of term-%d: ", i + 1);

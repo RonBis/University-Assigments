@@ -12,24 +12,15 @@ typedef struct Node {
     struct Node* right_child;
 } node;
 
-// typedef struct TreeLevel {
-//     int current_level;
-//     int node_count;
-//     int MAXNODE;
-// } tree_level;
-
 node* create_node(int data);
 node* insert(node* root, int data);
 void delete(node* root, int data);
 void display(node* root, int space);
 
-// void update_tree_level(tree_level* tree_lvl) {
-//     if (tree_lvl->node_count == tree_lvl->MAXNODE) {
-//         tree_lvl->current_level++;
-//         tree_lvl->node_count = 0;
-//         tree_lvl->MAXNODE = pow(2, tree_lvl->current_level);
-//     }
-// }
+node* rotate_left(node* node);
+node* rotate_right(node* node);
+node* rotate_left_right(node* node);
+node* rotate_right_left(node* node);
 
 // int get_terminal_width() {
 //     struct winsize w;
@@ -47,10 +38,15 @@ void display(node* root, int space);
 //     printf("%*s%s\n", padding, "", text);
 // }
 
-int max(int a, int b) { return (a > b) ? a : b; }
+static inline int max(int a, int b) { return (a > b) ? a : b; }
 
 static inline int height(node* node) {
     return node == NULL ? -1 : node->height;
+}
+
+static inline void update_height(node* node) {
+    if (node == NULL) return;
+    node->height = 1 + max(height(node->left_child), height(node->right_child));
 }
 
 int main() {
@@ -58,13 +54,12 @@ int main() {
 
     node* root = NULL;
     for (int i = 0; i < 6; i++) {
-        if (root == NULL)
-            root = insert(root, sequence[i]);
-        else
-            insert(root, sequence[i]);
+        root = insert(root, sequence[i]);
+        printf("\n");
+        display(root, 0);
+        printf("\n");
     }
 
-    display(root, 0);
     printf("\n");
     return 0;
 }
@@ -90,10 +85,33 @@ node* insert(node* root, int data) {
     }
 
     // Update height (here root is last inserted node's parent)
-    root->height = 1 + max(height(root->left_child), height(root->right_child));
+    update_height(root);
+
     // Check balance factor (bf)
     int bf = height(root->left_child) - height(root->right_child);
-    printf("root: %d, balance factor: %d\n", root->data, bf);
+    printf("node: %d, balance factor: %d\n", root->data, bf);
+
+    // Rotation cases
+    if (bf > 1 && data < root->left_child->data) {
+        printf("Left Left Case\n");
+        return rotate_right(root);
+    }
+
+    if (bf < -1 && data > root->right_child->data) {
+        printf("Right Right Case\n");
+        return rotate_left(root);
+    }
+
+    if (bf > 1 && data > root->left_child->data) {
+        printf("Left Right Case\n");
+        return rotate_left_right(root);
+    }
+
+    if (bf < -1 && data < root->right_child->data) {
+        printf("Right Left Case\n");
+        return rotate_right_left(root);
+    }
+
     return root;
 }
 
@@ -112,4 +130,40 @@ void display(node* root, int space) {
     printf("%d\n", root->data);
 
     display(root->left_child, space);
+}
+
+node* rotate_left(node* X) {
+    node* Y = X->right_child;
+    node* T2 = Y->left_child;
+
+    Y->left_child = X;
+    X->right_child = T2;
+
+    update_height(X);
+    update_height(Y);
+
+    return Y;
+}
+
+node* rotate_right(node* X) {
+    node* Y = X->left_child;
+    node* T2 = Y->right_child;
+
+    Y->right_child = X;
+    X->left_child = T2;
+
+    update_height(X);
+    update_height(Y);
+
+    return Y;
+}
+
+node* rotate_left_right(node* X) {
+    X->left_child = rotate_left(X->left_child);
+    return rotate_right(X);
+}
+
+node* rotate_right_left(node* X) {
+    X->right_child = rotate_right(X->right_child);
+    return rotate_left(X);
 }
