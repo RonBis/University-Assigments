@@ -24,7 +24,7 @@ node* rotate_right(node* node);
 node* rotate_left_right(node* node);
 node* rotate_right_left(node* node);
 
-node* rebalance_tree(node* root, int data);
+node* rebalance_tree(node* root);
 
 // int get_terminal_width() {
 //     struct winsize w;
@@ -53,33 +53,14 @@ static inline void update_height(node* node) {
     node->height = 1 + max(height(node->left_child), height(node->right_child));
 }
 
-node* rebalance_tree(node* root, int data) {
-    // Calculate balance factor (bf)
+node *rebalance_tree(node *root) {
     int bf = height(root->left_child) - height(root->right_child);
-    // printf("node: %d, balance factor: %d\n", root->data, bf);
 
-    // Rotation cases
-    if (bf > 1 && data < root->left_child->data) {
-        // printf("Left Left Case\n");
-        return rotate_right(root);
+    // Left heavy
+    if (bf > 1) {
+        if ()
     }
 
-    if (bf < -1 && data > root->right_child->data) {
-        // printf("Right Right Case\n");
-        return rotate_left(root);
-    }
-
-    if (bf > 1 && data > root->left_child->data) {
-        // printf("Left Right Case\n");
-        return rotate_left_right(root);
-    }
-
-    if (bf < -1 && data < root->right_child->data) {
-        // printf("Right Left Case\n");
-        return rotate_right_left(root);
-    }
-
-    return NULL;
 }
 
 // int main() {

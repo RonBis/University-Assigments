@@ -1,3 +1,4 @@
+#include <stdbool.h>
 #include <stdio.h>
 #include <stdlib.h>
 
@@ -6,6 +7,57 @@ typedef struct {
     int* arr;
 } IntArray;
 
+IntArray* new_intarray(int size) {
+    IntArray* intArray = (IntArray*)malloc(sizeof(IntArray));
+    int* arr = (int*)malloc(size * sizeof(int));
+    intArray->arr = arr;
+    intArray->size = size;
+    return intArray;
+}
+
+typedef struct {
+    int top;
+    int* arr;
+    int max;
+} Stack;
+
+Stack* new_stack(int size) {
+    Stack* st = (Stack*)malloc(sizeof(Stack));
+    int* arr = (int*)malloc(size * sizeof(int));
+    st->arr = arr;
+    st->max = size;
+    st->top = -1;
+    return st;
+}
+
+static inline bool is_stack_empty(Stack* st) { return st->top == -1; }
+
+void push_to_stack(Stack* st, int data) {
+    if (st->top == st->max - 1) {
+        printf("Stack overflow!\n");
+        return;
+    }
+    st->arr[++(st->top)] = data;
+}
+
+int pop_from_stack(Stack* st) {
+    if (is_stack_empty(st)) {
+        printf("Stack underflow!\n");
+        return -9999;
+    }
+    int popped = st->arr[st->top];
+    (st->top)--;
+    return popped;
+}
+
+void display_stack(Stack* st) {
+    printf("\nStack:\n");
+    for (int i = 0; i <= st->top; i++) {
+        printf("%d\t", st->arr[i]);
+    }
+    printf("\n");
+}
+
 typedef struct {
     int num_verts;
     int** adj_mat;
@@ -13,39 +65,80 @@ typedef struct {
     int* in_degree_list;
 } Graph;
 
+void print_indegrees(IntArray* intArray, Graph* G);
 IntArray* input_array();
 void graph_sort(IntArray* intArray);
 Graph* init_graph(IntArray* intArray);
 
 int main() {
-    IntArray* intArray = input_array();
-    graph_sort(intArray);
+    // IntArray* intArray = input_array();
+    int numbers[] = {4, 2, 1, 4, 3, 5, 4, 3, 1};
+    IntArray intArray = (IntArray){
+        .arr = numbers, .size = sizeof(numbers) / sizeof(numbers[0])};
+
+    graph_sort(&intArray);
+
+    printf("\n");
     return 0;
 }
 
+void print_indegrees(IntArray* intArray, Graph* G) {
+    printf("El\t->\tIn Degree\n");
+    for (int i = 0; i < intArray->size; i++) {
+        printf("%d\t->\t%d\n", intArray->arr[i], G->in_degree_list[i]);
+    }
+}
+
 IntArray* input_array() {
-    IntArray* intArray = (IntArray*)malloc(sizeof(IntArray));
-
+    int N;
     printf("Enter no of elements: ");
-    scanf("%d", &intArray->size);
+    scanf("%d", &N);
 
-    int N = intArray->size;
-    int* arr = (int*)malloc(N * sizeof(int));
+    IntArray* intArray = new_intarray(N);
     printf("Enter array elements one by one:\n");
     for (int i = 0; i < N; i++) {
-        scanf("%d", &arr[i]);
+        scanf("%d", &intArray->arr[i]);
     }
-
-    intArray->arr = arr;
     return intArray;
 }
 
 void graph_sort(IntArray* intArray) {
-    // Construct initial graph
-    Graph* G = init_graph(intArray);
+    printf("No of elements: %d\n\n", intArray->size);
 
+    Graph* G = init_graph(intArray);  // Construct initial graph
+    Stack* src_stack =
+        new_stack(intArray->size);  // Stack containing source vertices
+
+    // Find vertices with in-degree zero and push them to stack
     for (int i = 0; i < intArray->size; i++) {
-        printf("%d -> %d\n", intArray->arr[i], G->in_degree_list[i]);
+        if (G->in_degree_list[i] == 0) {
+            push_to_stack(src_stack, i);
+        }
+    }
+    int iter = 0;
+    do {
+        // Vertex with highest positional value will always be at the top
+        int src_vertex_id = pop_from_stack(src_stack);
+        int src_node = intArray->arr[src_vertex_id];
+
+        // Update sorted array
+        G->delisted[iter] = src_node;
+
+        // Find the neighbours of the popped vertex and update in-degrees
+        for (int i = 0; i < G->num_verts; i++) {
+            if (G->adj_mat[src_vertex_id][i] == 1) {
+                G->in_degree_list[i] -= 1;
+                if (G->in_degree_list[i] == 0) {
+                    push_to_stack(src_stack, i);
+                }
+            }
+        }
+
+        iter++;
+    } while (!is_stack_empty(src_stack));
+
+    for (int i = 0; i < G->num_verts; i++) {
+        printf("%d\t", G->delisted[i]);
     }
 }
 
