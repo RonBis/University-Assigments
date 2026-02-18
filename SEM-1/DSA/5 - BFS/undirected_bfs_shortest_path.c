@@ -171,13 +171,11 @@ void performBFS_shortest_path(graph* G) {
     visited_array[start] = 1;
     distance[start] = 0;
 
-    int found = 0;
     while (q.front <= q.rear) {
         int u = dequeue(&q);
 
         // Early exit if we found the target
         if (u == end) {
-            found = 1;
             break;
         }
 

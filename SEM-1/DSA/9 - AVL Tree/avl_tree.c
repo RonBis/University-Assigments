@@ -4,27 +4,27 @@
 #include <unistd.h>
 
 typedef struct Node {
-    int data;
-    int height;
-    struct Node* left_child;
-    struct Node* right_child;
+  int data;
+  int height;
+  struct Node *left_child;
+  struct Node *right_child;
 } node;
 
-node* create_node(int data);
-node* insert(node* root, int data);
-node* delete(node* root, int data);
-void display(node* root, int space);
+node *create_node(int data);
+node *insert(node *root, int data);
+node *delete(node *root, int data);
+void display(node *root, int space);
 
-void preorder(node* node);
-void inorder(node* node);
-void postorder(node* root);
+void preorder(node *node);
+void inorder(node *node);
+void postorder(node *root);
 
-node* rotate_left(node* node);
-node* rotate_right(node* node);
-node* rotate_left_right(node* node);
-node* rotate_right_left(node* node);
+node *rotate_left(node *node);
+node *rotate_right(node *node);
+node *rotate_left_right(node *node);
+node *rotate_right_left(node *node);
 
-node* rebalance_tree(node* root);
+node *rebalance_tree(node *root);
 
 // int get_terminal_width() {
 //     struct winsize w;
@@ -44,263 +44,300 @@ node* rebalance_tree(node* root);
 
 static inline int max(int a, int b) { return (a > b) ? a : b; }
 
-static inline int height(node* node) {
-    return node == NULL ? -1 : node->height;
+static inline int height(node *node) {
+  return node == NULL ? -1 : node->height;
 }
 
-static inline void update_height(node* node) {
-    if (node == NULL) return;
-    node->height = 1 + max(height(node->left_child), height(node->right_child));
+static inline void update_height(node *node) {
+  if (node == NULL)
+    return;
+  node->height = 1 + max(height(node->left_child), height(node->right_child));
+}
+
+static inline int balance_factor(node *n) {
+  return (n == NULL) ? 0 : height(n->left_child) - height(n->right_child);
 }
 
 node *rebalance_tree(node *root) {
-    int bf = height(root->left_child) - height(root->right_child);
+  if (root == NULL)
+    return NULL;
 
-    // Left heavy
-    if (bf > 1) {
-        if ()
+  int bf = balance_factor(root);
+
+  // ---------- LEFT HEAVY ----------
+  if (bf > 1) {
+    // LL Case
+    if (balance_factor(root->left_child) >= 0) {
+      return rotate_right(root);
     }
+    // LR Case
+    else {
+      root->left_child = rotate_left(root->left_child);
+      return rotate_right(root);
+    }
+  }
 
+  // ---------- RIGHT HEAVY ----------
+  if (bf < -1) {
+    // RR Case
+    if (balance_factor(root->right_child) <= 0) {
+      return rotate_left(root);
+    }
+    // RL Case
+    else {
+      root->right_child = rotate_right(root->right_child);
+      return rotate_left(root);
+    }
+  }
+
+  // Already balanced
+  return root;
+}
+
+int main() {
+  int sequence[6] = {10, 20, 30, 40, 50, 25};
+
+  node *root = NULL;
+  for (int i = 0; i < 6; i++) {
+    root = insert(root, sequence[i]);
+    printf("\n");
+    display(root, 0);
+    printf("\n");
+  }
+
+  printf("Deleting 20\n");
+  delete(root, 20);
+  display(root, 0);
+
+  printf("\n");
+  return 0;
 }
 
 // int main() {
-//     int sequence[6] = {10, 20, 30, 40, 50, 25};
+//   node *root = NULL;
+//   int choice, value;
 
-//     node* root = NULL;
-//     char ch;
-//     do {
-      
-//     } while ();
-    
-//     for (int i = 0; i < 6; i++) {
-//         root = insert(root, sequence[i]);
-//         printf("\n");
-//         display(root, 0);
-//         printf("\n");
+//   while (1) {
+//     printf("\n====== AVL TREE MENU ======\n");
+//     printf("1. Insert\n");
+//     printf("2. Delete\n");
+//     printf("3. Display As Tree\n");
+//     printf("4. Preorder Traversal\n");
+//     printf("5. Inorder Traversal\n");
+//     printf("6. Postorder Travresal\n");
+//     printf("7. Exit\n");
+//     printf("Enter your choice: ");
+//     scanf("%d", &choice);
+
+//     switch (choice) {
+//     case 1:
+//       printf("Enter value to insert: ");
+//       scanf("%d", &value);
+//       root = insert(root, value);
+//       break;
+
+//     case 2:
+//       printf("Enter value to delete: ");
+//       scanf("%d", &value);
+//       root = delete(root, value);
+//       break;
+
+//     case 3:
+//       printf("\nAVL Tree:\n");
+//       display(root, 0);
+//       printf("\n");
+//       break;
+
+//     case 4:
+//       printf("\nPreorder Traversal:\n");
+//       preorder(root);
+//       printf("\n");
+//       break;
+
+//     case 5:
+//       printf("\nInorder Traversal:\n");
+//       inorder(root);
+//       printf("\n");
+//       break;
+
+//     case 6:
+//       printf("\nPostorder Traversal:\n");
+//       postorder(root);
+//       printf("\n");
+//       break;
+
+//     case 7:
+//       printf("Exiting program...\n");
+//       exit(0);
+
+//     default:
+//       printf("Invalid choice! Try again.\n");
 //     }
+//   }
 
-//     printf("Deleting 20\n");
-//     delete(root, 20);
-//     display(root, 0);
-
-//     printf("\n");
-//     return 0;
+//   return 0;
 // }
 
-int main() {
-    node* root = NULL;
-    int choice, value;
-
-    while (1) {
-        printf("\n====== AVL TREE MENU ======\n");
-        printf("1. Insert\n");
-        printf("2. Delete\n");
-        printf("3. Display As Tree\n");
-        printf("4. Preorder Traversal\n");
-        printf("5. Inorder Traversal\n");
-        printf("6. Postorder Travresal\n");
-        printf("7. Exit\n");
-        printf("Enter your choice: ");
-        scanf("%d", &choice);
-
-        switch (choice) {
-            case 1:
-                printf("Enter value to insert: ");
-                scanf("%d", &value);
-                root = insert(root, value);
-                break;
-
-            case 2:
-                printf("Enter value to delete: ");
-                scanf("%d", &value);
-                root = delete(root, value);
-                break;
-
-            case 3:
-                printf("\nAVL Tree:\n");
-                display(root, 0);
-                printf("\n");
-                break;
-            
-            case 4:
-                printf("\nPreorder Traversal:\n");
-                preorder(root);
-                printf("\n");
-                break;
-
-            case 5:
-                printf("\nInorder Traversal:\n");
-                inorder(root);
-                printf("\n");
-                break;
-
-            case 6:
-                printf("\nPostorder Traversal:\n");
-                postorder(root);
-                printf("\n");
-                break;
-
-            case 7:
-                printf("Exiting program...\n");
-                exit(0);
-
-            default:
-                printf("Invalid choice! Try again.\n");
-        }
-    }
-
-    return 0;
+node *create_node(int data) {
+  node *root = (node *)malloc(sizeof(node));
+  root->data = data;
+  root->height = 0;
+  root->left_child = NULL;
+  root->right_child = NULL;
+  return root;
 }
 
+node *insert(node *root, int data) {
+  if (root == NULL) {
+    return create_node(data);
+  }
 
-node* create_node(int data) {
-    node* root = (node*)malloc(sizeof(node));
-    root->data = data;
-    root->height = 0;
-    root->left_child = NULL;
-    root->right_child = NULL;
+  if (data <= root->data) {
+    root->left_child = insert(root->left_child, data);
+  } else {
+    root->right_child = insert(root->right_child, data);
+  }
+
+  // Update height (here root is last inserted node's parent)
+  update_height(root);
+
+  // Rebalance tree if needed
+  node *rebalanced_tree_root = rebalance_tree(root);
+  if (rebalanced_tree_root != NULL) {
+    return rebalanced_tree_root;
+  }
+
+  return root;
+}
+
+node *min_value_node(node *root) {
+  node *t = root;
+  while (t->left_child != NULL) {
+    t = t->left_child;
+  }
+  return t;
+}
+
+node *delete(node *root, int data) {
+  if (root == NULL) {
     return root;
-}
+  }
 
-node* insert(node* root, int data) {
-    if (root == NULL) {
-        return create_node(data);
-    }
+  if (data < root->data) {
+    root->left_child = delete(root->left_child, data);
+  } else if (data > root->data) {
+    root->right_child = delete(root->right_child, data);
+  } else {
+    // We found the node to be deleted
 
-    if (data <= root->data) {
-        root->left_child = insert(root->left_child, data);
+    // CASE: Node with only one child or no child
+    if ((root->left_child == NULL) || (root->right_child == NULL)) {
+      node *temp = root->left_child ? root->left_child : root->right_child;
+
+      if (temp == NULL) {
+        // Case: No children (Leaf node)
+        temp = root;
+        root = NULL;
+      } else {
+        // Case: One child
+        // Copy the contents of the non-empty child into the current node
+        *root = *temp;
+      }
+      free(temp);
     } else {
-        root->right_child = insert(root->right_child, data);
+      // CASE: Node with two children
+      // Get the inorder successor (smallest in the right subtree)
+      node *temp = min_value_node(root->right_child);
+
+      // Copy the inorder successor's data to this node
+      root->data = temp->data;
+
+      // Delete the inorder successor
+      root->right_child = delete(root->right_child, temp->data);
     }
+  }
 
-    // Update height (here root is last inserted node's parent)
-    update_height(root);
-
-    // Rebalance tree if needed
-    node* rebalanced_tree_root = rebalance_tree(root, data);
-    if (rebalanced_tree_root != NULL) {
-        return rebalanced_tree_root;
-    }
-
+  // If the tree had only one node, return
+  if (root == NULL) {
     return root;
-}
+  }
 
-node* min_value_node(node* root) {
-    node* t = root;
-    while (t->left_child != NULL) {
-        t = t->left_child;
-    }
-    return t;
-}
-
-node* delete(node* root, int data) {
-    if (root == NULL) {
-        return root;
-    }
-
-    if (data < root->data) {
-        root->left_child = delete(root->left_child, data);
-    } else if (data > root->data) {
-        root->right_child = delete(root->right_child, data);
-    } else {
-        // Found node with deletion key
-        if (root->left_child == NULL && root->right_child == NULL) {
-            node* t = root->left_child ? root->right_child : root->left_child;
-            if (t == NULL) {
-                t = root;
-                root = NULL;
-            } else {
-                root = t;
-            }
-            free(t);
-        } else {
-            node* t = min_value_node(root->right_child);
-            root->data = t->data;
-            root->right_child = delete(root->right_child, t->data);
-        }
-    }
-
-    if (root == NULL) return NULL;
-
-    update_height(root);
-
-    // Rebalance tree if needed
-    node* rebalanced_tree_root = rebalance_tree(root, data);
-    if (rebalanced_tree_root != NULL) {
-        return rebalanced_tree_root;
-    }
-
-    return root;
+  update_height(root);
+  return rebalance_tree(root);
 }
 
 // Horizontal tree display function
-void display(node* root, int space) {
-    if (root == NULL) return;
+void display(node *root, int space) {
+  if (root == NULL)
+    return;
 
-    space += 8;  // indentation between levels
+  space += 8;                        // indentation between levels
+  display(root->right_child, space); // print right subtree first
 
-    display(root->right_child, space);  // print right subtree first
+  printf("\n");
+  for (int i = 8; i < space; i++)
+    printf(" ");
+  printf("%d\n", root->data);
 
-    printf("\n");
-    for (int i = 8; i < space; i++) printf(" ");
-    printf("%d\n", root->data);
-
-    display(root->left_child, space);
+  display(root->left_child, space);
 }
 
-node* rotate_left(node* X) {
-    node* Y = X->right_child;
-    node* T2 = Y->left_child;
+node *rotate_left(node *X) {
+  node *Y = X->right_child;
+  node *T2 = Y->left_child;
 
-    Y->left_child = X;
-    X->right_child = T2;
+  Y->left_child = X;
+  X->right_child = T2;
 
-    update_height(X);
-    update_height(Y);
+  update_height(X);
+  update_height(Y);
 
-    return Y;
+  return Y;
 }
 
-node* rotate_right(node* X) {
-    node* Y = X->left_child;
-    node* T2 = Y->right_child;
+node *rotate_right(node *X) {
+  node *Y = X->left_child;
+  node *T2 = Y->right_child;
 
-    Y->right_child = X;
-    X->left_child = T2;
+  Y->right_child = X;
+  X->left_child = T2;
 
-    update_height(X);
-    update_height(Y);
+  update_height(X);
+  update_height(Y);
 
-    return Y;
+  return Y;
 }
 
-node* rotate_left_right(node* X) {
-    X->left_child = rotate_left(X->left_child);
-    return rotate_right(X);
+node *rotate_left_right(node *X) {
+  X->left_child = rotate_left(X->left_child);
+  return rotate_right(X);
 }
 
-node* rotate_right_left(node* X) {
-    X->right_child = rotate_right(X->right_child);
-    return rotate_left(X);
+node *rotate_right_left(node *X) {
+  X->right_child = rotate_right(X->right_child);
+  return rotate_left(X);
 }
 
-void inorder(node* root) {
-    if (root == NULL) return;
-    inorder(root->left_child);
-    printf("%d ", root->data);
-    inorder(root->right_child);
+void inorder(node *root) {
+  if (root == NULL)
+    return;
+  inorder(root->left_child);
+  printf("%d ", root->data);
+  inorder(root->right_child);
 }
 
-void preorder(node* root) {
-    if (root == NULL) return;
-    printf("%d ", root->data);
-    preorder(root->left_child);
-    preorder(root->right_child);
+void preorder(node *root) {
+  if (root == NULL)
+    return;
+  printf("%d ", root->data);
+  preorder(root->left_child);
+  preorder(root->right_child);
 }
 
-void postorder(node* root) {
-    if (root == NULL) return;
-    postorder(root->left_child);
-    postorder(root->right_child);
-    printf("%d ", root->data);
+void postorder(node *root) {
+  if (root == NULL)
+    return;
+  postorder(root->left_child);
+  postorder(root->right_child);
+  printf("%d ", root->data);
 }
